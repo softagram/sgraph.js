@@ -278,7 +278,15 @@ class SElement {
 
   getHash = () => this.hash;
   updateHash() {
-    this.hash = hash(this);
+    this.hash = hash({
+      n: this.name,
+      h: this.humanReadableName,
+      p: this.parent?.getHash(),
+      c: this.children.length,
+      co: Object.keys(this.childrenObject).sort(),
+      o: this.outgoing.length,
+      i: this.incoming.length,
+    });
   }
 
   equals(other: SElement) {
