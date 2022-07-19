@@ -2,6 +2,7 @@ import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
 import { SElement } from '../selement';
 import SGraphXMLParser from './sgraphXmlParser';
+import { EChartsOptions, sgraphToEcharts } from '../converters';
 
 interface ParseXmlOptions {
   data: string;
@@ -84,6 +85,11 @@ class SGraph {
 
   setModelPath(filePath: string) {
     this.modelAttrs['model_path'] = filePath;
+  }
+
+  toEcharts(): EChartsOptions {
+    const ec = sgraphToEcharts(this);
+    return ec;
   }
 }
 

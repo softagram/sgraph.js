@@ -240,6 +240,13 @@ class SElement {
     return current;
   }
 
+  traverseElements(visit: (e: SElement) => void) {
+    visit(this);
+    for (let c of this.children) {
+      c.traverseElements(visit);
+    }
+  }
+
   getAncestors() {
     let ancestor: SElement = this;
     const ancestors: SElement[] = [];
