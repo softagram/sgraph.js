@@ -1,14 +1,14 @@
 import hash from 'object-hash';
-import { SElementAssociation } from './selementAssociation';
+import { SElementAssociation } from '.';
 
 const DEBUG = true;
 
 class SElement {
-  hash: string;
+  private hash: string = '';
   name: string;
   humanReadableName = '';
   parent: SElement | undefined;
-  attrs: { [key: string]: any } = {};
+  private attrs: { [key: string]: string | string[] } = {};
   children: SElement[] = [];
   childrenObject: { [key: string]: SElement } = {};
   outgoing: SElementAssociation[] = [];
@@ -16,7 +16,7 @@ class SElement {
 
   constructor(name: string, parent?: SElement) {
     if (name.replace(/\s/g, '') === '') {
-      console.error('Creating with empty name');
+      console.error('Creating SElement with empty name');
     }
 
     if (parent && this.equals(parent)) {
@@ -50,7 +50,7 @@ class SElement {
       }
     }
 
-    this.hash = this.getHash();
+    this.updateHash();
   }
 
   addChild(child: SElement) {
@@ -74,13 +74,14 @@ class SElement {
         );
       } else {
         this.childrenObject[child.name].merge(child);
+        this.updateHash();
         return this.childrenObject[child.name];
       }
     }
 
     child.parent = this;
 
-    this.hash = this.getHash();
+    this.updateHash();
   }
 
   merge(other: SElement, ignoreType?: boolean, ignoreAttrs?: boolean) {
@@ -89,16 +90,19 @@ class SElement {
       this.addChild(child);
     }
 
-    let currentDeps: { [key: string]: any[] } = {};
+    let currentDeps: { [key: string]: string[] } = {};
     for (let ea of this.outgoing) {
-      if (ea.toElement)
-        (currentDeps[ea.toElement.hash] ??= []).push(ea.deptype);
+      if (ea.toElement) {
+        currentDeps[ea.toElement.hash] ??= [];
+        if (ea.deptype) currentDeps[ea.toElement.hash].push(ea.deptype);
+      }
     }
 
     for (let ea of other.outgoing) {
       if (
         ea.toElement &&
         ea.toElement.hash in currentDeps &&
+        ea.deptype &&
         ea.deptype in currentDeps[ea.toElement.hash] &&
         !this.equals(ea.toElement)
       ) {
@@ -115,14 +119,17 @@ class SElement {
 
     currentDeps = {};
     for (let ea of this.incoming) {
-      if (ea.fromElement)
-        (currentDeps[ea.fromElement.getHash()] ??= []).push(ea.deptype);
+      if (ea.fromElement) {
+        currentDeps[ea.fromElement.hash] ??= [];
+        if (ea.deptype) currentDeps[ea.fromElement.hash].push(ea.deptype);
+      }
     }
 
     for (let ea of other.incoming) {
       if (
         ea.fromElement &&
         ea.fromElement.hash in currentDeps &&
+        ea.deptype &&
         ea.deptype in currentDeps[ea.fromElement.hash]
       ) {
         const newEa = new SElementAssociation(
@@ -144,12 +151,14 @@ class SElement {
           if (Array.isArray(value)) {
             for (let v of value) {
               if (!this.attrs[key].includes(v)) {
-                this.attrs[key].push(v);
+                this.addAttribute(key, v);
               }
             }
           } else {
-            this.attrs[key] = this.attrs[key] + '-merged-' + value.toString();
+            this.attrs[key] = `${this.attrs[key]}-merged-${value.toString()}`;
           }
+        } else {
+          continue;
         }
       } else if (
         !ignoreType &&
@@ -166,7 +175,7 @@ class SElement {
       other.parent = undefined;
     }
 
-    this.hash = this.getHash();
+    this.updateHash();
   }
 
   detachChild(child: SElement) {
@@ -182,6 +191,7 @@ class SElement {
         } under ${this.getPath()}`
       );
     }
+    this.updateHash();
   }
 
   getChildByName = (name: string) => this.childrenObject[name];
@@ -204,15 +214,48 @@ class SElement {
     return undefined;
   }
 
-  addAttribute(name: string, value: any) {
-    this.attrs[name] = value;
+  createOrGetElement(n: string): SElement {
+    if (n.startsWith('/')) n = n.slice(1);
+
+    if (!n.includes('/')) {
+      const child = this.getChildByName(n);
+      if (child) return child;
+      return new SElement(n, this);
+    }
+
+    if (this.children.length === 0) {
+      return this.createElementChain(n);
+    }
+
+    const pos = n.indexOf('/');
+    const root = n.slice(0, pos);
+    const child = this.getChildByName(root);
+    if (child) return child.createOrGetElement(n.slice(pos + 1));
+    return this.createElementChain(n);
   }
 
-  typeEquals(t: any) {
-    if ('type' in this.attrs) {
-      return this.attrs.type === t;
+  createElementChain(id: string) {
+    let current: SElement = this;
+    for (let n of id.split('/')) current = new SElement(n, current);
+    return current;
+  }
+
+  getAncestors() {
+    let ancestor: SElement = this;
+    const ancestors: SElement[] = [];
+    while (ancestor && ancestor.parent) {
+      ancestor = ancestor.parent;
+      ancestors.push(ancestor);
     }
-    return t === '';
+    return ancestors;
+  }
+
+  addAttribute(name: string, value: string) {
+    if (name === 'type') {
+      this.attrs[name] = value;
+    } else {
+      (<string[]>(this.attrs[name] ??= [])).push(value);
+    }
   }
 
   setType(t: string) {
@@ -233,12 +276,17 @@ class SElement {
     return pathparts.reverse().join('/');
   }
 
-  getHash() {
-    return hash(this);
+  getHash = () => this.hash;
+  updateHash() {
+    this.hash = hash(this);
   }
 
   equals(other: SElement) {
     return this.hash === other.hash;
+  }
+
+  typeEquals(t: any) {
+    return this.attrs.type === t;
   }
 }
 

@@ -12,7 +12,7 @@ class ModelApi {
   constructor(options: ModelApiOptions) {
     const { data } = options;
 
-    this.model = SGraph.parseXml(data);
+    this.model = SGraph.parseXml({ data });
     this.egm = this.model;
   }
 
@@ -34,7 +34,20 @@ class ModelApi {
   }
 
   getCalledFunctions = (element: SElement) =>
-    element.outgoing.filter((ea) => ea.deptype === 'function_ref');
+    element.outgoing
+      .filter((ea) => ea.deptype === 'function_ref')
+      .map((ea) => ea.toElement);
+
+  getCallingFunctions = (element: SElement) =>
+    element.incoming
+      .filter((ea) => ea.deptype === 'function_ref')
+      .map((ea) => ea.fromElement);
+
+  getUsedElements = (element: SElement) =>
+    element.outgoing.map((ea) => ea.fromElement);
+
+  getUserElements = (element: SElement) =>
+    element.incoming.map((ea) => ea.fromElement);
 }
 
 export { ModelApi };

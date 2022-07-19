@@ -8,8 +8,9 @@ export default class SGraphXMLParser {
   currentElement?: SElement;
   currentElementPath?: string;
   idToElemMap: { [key: string]: SElement } = {};
-  currentRelation?: { [key: string]: any };
+  currentRelation?: { [key: string]: string };
   currentElementOutgoingDeps: SElementAssociation[] = [];
+  acceptAllAssocTypes = false;
   acceptableAssocTypes = new Set();
   ignoreAssocTypes = new Set();
   ignoredAttributes;
@@ -36,7 +37,11 @@ export default class SGraphXMLParser {
       if (typeRule.startsWith('IGNORE ')) {
         this.ignoreAssocTypes.add(typeRule.substring(7).trim());
       } else {
-        this.acceptableAssocTypes.add(typeRule);
+        if (typeRule === 'ALL') {
+          this.acceptAllAssocTypes = true;
+        } else {
+          this.acceptableAssocTypes.add(typeRule);
+        }
       }
     }
   }
@@ -109,6 +114,7 @@ export default class SGraphXMLParser {
       }
     }
   };
+
   onclosetag = (tag: string) => {
     tag = tag.toLowerCase();
 
@@ -120,49 +126,42 @@ export default class SGraphXMLParser {
         this.currentElementPath = '/' + this.idStack.join('/');
       }
     } else if (tag === 'r') {
-      if (this.currentElementOutgoingDeps) {
-        for (let x of this.currentElementOutgoingDeps) {
-          if (this.currentRelation) x.setAttrMap(this.currentRelation);
-          this.currentElement?.outgoing.push(x as any);
-        }
-        this.currentElementOutgoingDeps = [];
+      for (let x of this.currentElementOutgoingDeps) {
+        if (this.currentRelation) x.setAttrs(this.currentRelation);
+        this.currentElement?.outgoing.push(x as any);
       }
+      this.currentElementOutgoingDeps = [];
       this.currentRelation = undefined;
     }
   };
 
   createReference(i: string, t: string) {
-    if (!this.acceptableAssocTypes && this.ignoreAssocTypes) {
+    if (this.acceptAllAssocTypes) {
+    } else if (!this.acceptableAssocTypes && this.ignoreAssocTypes) {
       if (t in this.ignoreAssocTypes) return;
     } else if (!this.acceptableAssocTypes || t in this.acceptableAssocTypes) {
     } else if (
       this.acceptableAssocTypes &&
       this.acceptableAssocTypes.size === 0
     ) {
-      // return;
+      return;
     } else {
       return;
     }
-
-    const dep = new SElementAssociation(undefined, undefined, '', {});
 
     if (i === '0') {
       console.error('zero as ref id');
     }
 
-    dep.fromElement = this.currentElement!;
-    dep.toElement = i as any;
-    dep.deptype = t;
+    const dep = new SElementAssociation(this.currentElement!, <any>i, t);
     this.currentElementOutgoingDeps.push(dep);
   }
 
   translateReferences = () => {
     const stack = [this.rootNode];
 
-    let r = 0;
     while (stack.length > 0) {
       const elem = stack.shift();
-      r += 1;
       if (elem?.outgoing) {
         for (let ea of elem.outgoing as any) {
           if (ea.toElement in this.idToElemMap) {
@@ -187,5 +186,6 @@ export default class SGraphXMLParser {
 class ParsingIntentionallyAborted extends Error {
   constructor(message: string) {
     super(message);
+    this.name = 'ParsingIntentionallyAborted';
   }
 }
