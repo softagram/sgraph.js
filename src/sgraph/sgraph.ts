@@ -29,8 +29,8 @@ class SGraph {
     onlyRoot = false,
   }: ParseXmlOptions): SGraph {
     const parser = new SGraphXMLParser(ignoredAttributes, onlyRoot);
-    parser.parse(data);
     parser.setTypeRules(['ALL']);
+    parser.parse(data);
     parser.translateReferences();
     return new SGraph(parser.rootNode);
   }

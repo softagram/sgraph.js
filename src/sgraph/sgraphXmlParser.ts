@@ -9,7 +9,7 @@ export default class SGraphXMLParser {
   currentElementPath?: string;
   idToElemMap: { [key: string]: SElement } = {};
   currentRelation?: { [key: string]: string };
-  currentElementOutgoingDeps: SElementAssociation[] = [];
+  currentElementOutgoingDeps?: SElementAssociation[];
   acceptAllAssocTypes = false;
   acceptableAssocTypes = new Set();
   ignoreAssocTypes = new Set();
@@ -113,6 +113,8 @@ export default class SGraphXMLParser {
         }
       }
     }
+
+    if (tag.isSelfClosing) this.onclosetag(tag.name);
   };
 
   onclosetag = (tag: string) => {
@@ -126,11 +128,15 @@ export default class SGraphXMLParser {
         this.currentElementPath = '/' + this.idStack.join('/');
       }
     } else if (tag === 'r') {
-      for (let x of this.currentElementOutgoingDeps) {
-        if (this.currentRelation) x.setAttrs(this.currentRelation);
-        this.currentElement?.outgoing.push(x as any);
+      if (this.currentElementOutgoingDeps) {
+        for (let a of this.currentElementOutgoingDeps) {
+          if (this.currentRelation) a.setAttrs(this.currentRelation);
+        }
+        for (let x of this.currentElementOutgoingDeps) {
+          this.currentElement?.outgoing.push(x);
+        }
+        this.currentElementOutgoingDeps = undefined;
       }
-      this.currentElementOutgoingDeps = [];
       this.currentRelation = undefined;
     }
   };
@@ -148,6 +154,8 @@ export default class SGraphXMLParser {
     } else {
       return;
     }
+
+    if (!this.currentElementOutgoingDeps) this.currentElementOutgoingDeps = [];
 
     if (i === '0') {
       console.error('zero as ref id');
