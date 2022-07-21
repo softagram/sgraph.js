@@ -270,7 +270,7 @@ class SElement {
   }
 
   getType() {
-    return this.attrs.type || '<not known>';
+    return <string>this.attrs.type || '<not known>';
   }
 
   getPath() {

@@ -1,15 +1,14 @@
 import { SGraph } from '../sgraph';
+import { SElement } from '../selement';
 
 export interface EChartsOptions {
   categories: {
     name: string;
-    base: string;
-    keyword: {};
   }[];
   nodes: {
     name: string;
     value: 1;
-    category: 0;
+    category: number;
   }[];
   links: {
     source: number;
@@ -21,14 +20,25 @@ const sgraphToEcharts = (sg: SGraph) => {
   const options: EChartsOptions = {
     categories: [
       {
-        name: sg.rootNode.children[0].name,
-        base: sg.rootNode.children[0].name,
-        keyword: {},
+        name: 'repos',
+      },
+      {
+        name: 'directories',
+      },
+      {
+        name: 'files',
       },
     ],
     nodes: [],
     links: [],
   };
+
+  const pickCategory = (e: SElement) =>
+    e.parent?.getHash() === sg.rootNode.getHash()
+      ? 0
+      : e.getType() === 'dir'
+      ? 1
+      : 2;
 
   const hashToElemIndex: {
     [key: string]: number;
@@ -40,12 +50,12 @@ const sgraphToEcharts = (sg: SGraph) => {
         options.nodes.push({
           name: e.name,
           value: 1,
-          category: 0,
+          category: pickCategory(e),
         }) - 1;
       hashToElemIndex[e.getHash()] = index;
       if (e.parent)
         options.links.push({
-          source: hashToElemIndex[e.parent?.getHash()],
+          source: hashToElemIndex[e.parent.getHash()],
           target: index,
         });
     });
