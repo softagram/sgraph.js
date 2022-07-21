@@ -1,5 +1,3 @@
-import AdmZip from 'adm-zip';
-import { readFile } from 'fs/promises';
 import { SElement } from '../selement';
 import SGraphXMLParser from './sgraphXmlParser';
 import { EChartsOptions, sgraphToEcharts } from '../converters';
@@ -41,6 +39,9 @@ class SGraph {
     ignoredAttributes,
     onlyRoot = false,
   }: ParseXmlFileOrZippedXmlOptions): Promise<SGraph | undefined> {
+    const AdmZip = eval('require')('adm-zip');
+    const { readFile } = eval('require')('fs/promises');
+
     let data;
 
     try {

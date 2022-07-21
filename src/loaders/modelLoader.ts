@@ -1,5 +1,5 @@
 import { SGraph } from '../sgraph';
-import { AttributeLoader } from '.';
+import { isBrowser } from '../utils/browser';
 
 class ModelLoader {
   async load(
@@ -10,6 +10,9 @@ class ModelLoader {
     ],
     ignoredAttributes: string[] = []
   ): Promise<SGraph | undefined> {
+    if (isBrowser) throw new Error('ModelLoader cannot be used in the browser');
+    const { AttributeLoader } = eval('require')('./attributeLoader');
+
     let model;
 
     if (
