@@ -1,67 +1,74 @@
 import { SGraph } from '../sgraph';
-import { SElement } from '../selement';
+
+interface Category {
+  name: string;
+}
+interface Node {
+  id: number;
+  name: string;
+  category: number;
+}
+interface Link {
+  source: number;
+  target: number;
+  lineStyle?: any;
+}
 
 export interface EChartsOptions {
-  categories: {
-    name: string;
-  }[];
-  nodes: {
-    name: string;
-    value: 1;
-    category: number;
-  }[];
-  links: {
-    source: number;
-    target: number;
-  }[];
+  categories: Category[];
+  nodes: Node[];
+  links: Link[];
 }
 
 const sgraphToEcharts = (sg: SGraph) => {
-  const options: EChartsOptions = {
-    categories: [
-      {
-        name: 'repos',
-      },
-      {
-        name: 'directories',
-      },
-      {
-        name: 'files',
-      },
-    ],
-    nodes: [],
-    links: [],
-  };
+  const categories: Category[] = [];
+  const nodes: Node[] = [];
+  const links: Link[] = [];
 
-  const pickCategory = (e: SElement) =>
-    e.parent?.getHash() === sg.rootNode.getHash()
-      ? 0
-      : e.getType() === 'dir'
-      ? 1
-      : 2;
+  const hashToElemIndex: { [key: string]: number } = {};
 
-  const hashToElemIndex: {
-    [key: string]: number;
-  } = {};
-
-  for (let e of sg.rootNode.children) {
-    e.traverseElements((e) => {
-      const index =
-        options.nodes.push({
-          name: e.name,
-          value: 1,
-          category: pickCategory(e),
+  sg.rootNode.traverseElements((e) => {
+    const type = e.getType();
+    let categoryIndex = categories.findIndex((c) => c.name === type);
+    if (categoryIndex === -1) {
+      categoryIndex =
+        categories.push({
+          name: type,
         }) - 1;
-      hashToElemIndex[e.getHash()] = index;
-      if (e.parent)
-        options.links.push({
-          source: hashToElemIndex[e.parent.getHash()],
-          target: index,
-        });
-    });
-  }
+    }
 
-  return options;
+    const nodeIndex =
+      nodes.push({
+        id: nodes.length,
+        name: e.name,
+        category: categoryIndex,
+      }) - 1;
+    hashToElemIndex[e.getHash()] = nodeIndex;
+    if (e.parent) {
+      links.push({
+        source: hashToElemIndex[e.parent.getHash()],
+        target: nodeIndex,
+      });
+    }
+  });
+
+  sg.rootNode.traverseElements((e) => {
+    for (let ea of e.outgoing) {
+      links.push({
+        source: hashToElemIndex[ea.fromElement.getHash()],
+        target: hashToElemIndex[ea.toElement.getHash()],
+        lineStyle: {
+          type: 'dashed',
+        },
+      });
+    }
+  });
+
+  return {
+    categories,
+    nodes,
+    links,
+  };
 };
 
 export { sgraphToEcharts };
