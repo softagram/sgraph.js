@@ -5,11 +5,21 @@ class ModelApi {
   model: SGraph;
   egm: SGraph;
 
-  constructor(options: { data: string } | { model: SGraph }) {
-    if ('data' in options) {
+  constructor(
+    options:
+      | {
+          data: string;
+          model?: never;
+        }
+      | {
+          model: SGraph;
+          data?: never;
+        }
+  ) {
+    if (options.data) {
       this.model = SGraph.parseXml({ data: options.data });
     } else {
-      this.model = options.model;
+      this.model = options.model!;
     }
 
     this.egm = this.model;

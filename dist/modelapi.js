@@ -12,7 +12,7 @@ class ModelApi {
             .map((ea) => ea.fromElement);
         this.getUsedElements = (element) => element.outgoing.map((ea) => ea.fromElement);
         this.getUserElements = (element) => element.incoming.map((ea) => ea.fromElement);
-        if ('data' in options) {
+        if (options.data) {
             this.model = sgraph_1.SGraph.parseXml({ data: options.data });
         }
         else {

@@ -5,8 +5,10 @@ declare class ModelApi {
     egm: SGraph;
     constructor(options: {
         data: string;
+        model?: never;
     } | {
         model: SGraph;
+        data?: never;
     });
     getElementsByName(name: string): SElement[];
     getCalledFunctions: (element: SElement) => SElement[];
