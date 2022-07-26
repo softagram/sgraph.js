@@ -1,0 +1,24 @@
+<model version="2.1">
+  <elements>
+    <e n="mock-project" t="dir" architecture_modularity="63" compilers="" eliminated_files="" softagram_version="version" target_label="N/A">
+      <e n="package.json" t="file" hash="cebdf5473a2593a0d6ae2401d559ac938875e4cdbc3f6e7c31bf28df79bb9b46"></e>
+      <e n="src" t="dir" architecture_modularity="63">
+        <e i="3" n="database" t="dir" architecture_modularity="61">
+          <e i="2" n="index.js" t="file" hash="35100d33a6a71c6b4e8ed7e71be2f7fdbc9f8a3e1b8e5cbe41e2b506eb8455f9">
+            <r r="4,5" t="import" />
+            <r r="4,5" t="require" />
+          </e>
+          <e i="5" n="models.js" t="file" hash="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"></e>
+        </e>
+        <e n="index.js" t="file" hash="f70e284b069f382047a4d962a3d83f8c875246d3c18011ed9c30959112017475">
+          <r r="2,4" t="import" />
+          <r r="3,4" t="require" />
+        </e>
+        <e n="utils" t="dir" architecture_modularity="100">
+          <e i="4" n="math.js" t="file" hash="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"></e>
+        </e>
+      </e>
+    </e>
+
+  </elements>
+</model>
