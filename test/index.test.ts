@@ -6,30 +6,30 @@ describe('SGraph.js', () => {
   let model: SGraph;
   let modelApi: ModelApi;
 
-  describe('test ModelLoader', () => {
-    test('load model from xml', async () => {
+  describe('ModelLoader', () => {
+    it('loads model from xml', async () => {
       const modelLoader = new ModelLoader();
       const loadedModel = await modelLoader.load('test/modelfile.xml');
       if (loadedModel) model = loadedModel;
       expect(model).toBeDefined();
     });
 
-    test('load model from zip', async () => {
+    it('loads model from zip', async () => {
       const modelLoader = new ModelLoader();
       const loadedModel = await modelLoader.load('test/modelfile.xml.zip');
       expect(loadedModel).toBeDefined();
     });
   });
 
-  describe('test ModelApi', () => {
-    test('create ModelApi from model', () => {
+  describe('ModelApi', () => {
+    it('creates ModelApi from model', () => {
       modelApi = new ModelApi({
         model,
       });
       expect(modelApi).toBeDefined();
     });
 
-    test('create ModelApi from xml', async () => {
+    it('creates ModelApi from xml', async () => {
       const data = await readFile('test/modelfile.xml', 'utf8');
       const modelApi = new ModelApi({
         data,
@@ -37,19 +37,19 @@ describe('SGraph.js', () => {
       expect(modelApi).toBeDefined();
     });
 
-    test('find two index.js files by name', () => {
+    it('finds two index.js files by name', () => {
       const files = modelApi.getElementsByName('index.js');
       expect(files.length).toBe(2);
     });
   });
 
-  describe('test SGraph', () => {
-    test('find dir from path', () => {
+  describe('SGraph', () => {
+    it('finds dir from path', () => {
       const foundElement = model.findElementFromPath('mock-project/src/utils');
       expect(foundElement?.name).toBe('utils');
     });
 
-    test('find file from path', () => {
+    it('finds file from path', () => {
       const foundElement = model.findElementFromPath(
         'mock-project/src/database/models.js'
       );
@@ -57,36 +57,40 @@ describe('SGraph.js', () => {
     });
   });
 
-  describe('test converters', () => {
-    test('ECharts converter gives the right output', () => {
-      const ec = model.toEcharts();
-      expect(ec.categories).toMatchObject(echartsData.categories);
-      expect(ec.nodes).toMatchObject(echartsData.nodes);
-      expect(ec.links).toMatchObject(echartsData.links);
+  describe('Converters', () => {
+    describe('ECharts converter', () => {
+      it('gives the right output', () => {
+        const ec = model.toEcharts();
+        expect(ec.categories).toMatchObject(echartsData.categories);
+        expect(ec.nodes).toMatchObject(echartsData.nodes);
+        expect(ec.links).toMatchObject(echartsData.links);
+      });
     });
   });
 
-  describe('check properties', () => {
-    test('project name is mock-project', () => {
-      const projectName = model.rootNode.children[0].name;
-      expect(projectName).toBe('mock-project');
-    });
+  describe('Properties', () => {
+    describe('Project', () => {
+      it('is called mock-project', () => {
+        const projectName = model.rootNode.children[0].name;
+        expect(projectName).toBe('mock-project');
+      });
 
-    test('project has two children in childrens', () => {
-      const childrens = model.rootNode.children[0].children.length;
-      expect(childrens).toBe(2);
-    });
+      it('has two children in childrens', () => {
+        const childrens = model.rootNode.children[0].children.length;
+        expect(childrens).toBe(2);
+      });
 
-    test('project has two children in childrenObject', () => {
-      const childrens = Object.keys(
-        model.rootNode.children[0].childrenObject
-      ).length;
-      expect(childrens).toBe(2);
+      it('has two children in childrenObject', () => {
+        const childrens = Object.keys(
+          model.rootNode.children[0].childrenObject
+        ).length;
+        expect(childrens).toBe(2);
+      });
     });
   });
 
-  describe('check things existing in correct places', () => {
-    test('src and package.json exist as a child of the project', () => {
+  describe('Structure', () => {
+    it('has src and package.json as a child of the project', () => {
       const project = modelApi.egm.rootNode.children[0];
       expect(project.children).toContainEqual(
         expect.objectContaining({
@@ -102,7 +106,7 @@ describe('SGraph.js', () => {
       expect(project.childrenObject['package.json']).toBeDefined();
     });
 
-    test('utils is a child of the src directory', () => {
+    it('has utils as a child of the src directory', () => {
       const src = modelApi.egm.rootNode.children[0].childrenObject.src;
       expect(src.children).toContainEqual(
         expect.objectContaining({
@@ -117,8 +121,8 @@ describe('SGraph.js', () => {
     });
   });
 
-  describe('check dependencies', () => {
-    test('utils/math.js is outgoing dependency for src/index.js', () => {
+  describe('Dependencies', () => {
+    it('has utils/math.js as outgoing dependency for src/index.js', () => {
       const index =
         modelApi.egm.rootNode.children[0].childrenObject.src.childrenObject[
           'index.js'
