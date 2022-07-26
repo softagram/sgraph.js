@@ -12,8 +12,12 @@ class ModelApi {
             .map((ea) => ea.fromElement);
         this.getUsedElements = (element) => element.outgoing.map((ea) => ea.fromElement);
         this.getUserElements = (element) => element.incoming.map((ea) => ea.fromElement);
-        const { data } = options;
-        this.model = sgraph_1.SGraph.parseXml({ data });
+        if ('data' in options) {
+            this.model = sgraph_1.SGraph.parseXml({ data: options.data });
+        }
+        else {
+            this.model = options.model;
+        }
         this.egm = this.model;
     }
     getElementsByName(name) {

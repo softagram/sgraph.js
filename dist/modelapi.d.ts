@@ -1,12 +1,13 @@
 import { SElement } from './selement';
 import { SGraph } from './sgraph';
-interface ModelApiOptions {
-    data: string;
-}
 declare class ModelApi {
     model: SGraph;
     egm: SGraph;
-    constructor(options: ModelApiOptions);
+    constructor(options: {
+        data: string;
+    } | {
+        model: SGraph;
+    });
     getElementsByName(name: string): SElement[];
     getCalledFunctions: (element: SElement) => SElement[];
     getCallingFunctions: (element: SElement) => SElement[];

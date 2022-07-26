@@ -1,18 +1,17 @@
 import { SElement } from './selement';
 import { SGraph } from './sgraph';
 
-interface ModelApiOptions {
-  data: string;
-}
-
 class ModelApi {
   model: SGraph;
   egm: SGraph;
 
-  constructor(options: ModelApiOptions) {
-    const { data } = options;
+  constructor(options: { data: string } | { model: SGraph }) {
+    if ('data' in options) {
+      this.model = SGraph.parseXml({ data: options.data });
+    } else {
+      this.model = options.model;
+    }
 
-    this.model = SGraph.parseXml({ data });
     this.egm = this.model;
   }
 
