@@ -9,6 +9,9 @@ const _1 = require(".");
 const DEBUG = true;
 class SElement {
     constructor(name, parent) {
+        // if (name.replace(/\s/g, '') === '') {
+        //   console.error('Creating SElement with empty name');
+        // }
         this.hash = '';
         this.humanReadableName = '';
         this.attrs = {};
@@ -18,9 +21,6 @@ class SElement {
         this.incoming = [];
         this.getChildByName = (name) => this.childrenObject[name];
         this.getHash = () => this.hash;
-        if (name.replace(/\s/g, '') === '') {
-            console.error('Creating SElement with empty name');
-        }
         if (parent && this.equals(parent)) {
             throw new Error('Self loop in model\n');
         }

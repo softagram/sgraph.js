@@ -15,9 +15,9 @@ class SElement {
   incoming: SElementAssociation[] = [];
 
   constructor(name: string, parent?: SElement) {
-    if (name.replace(/\s/g, '') === '') {
-      console.error('Creating SElement with empty name');
-    }
+    // if (name.replace(/\s/g, '') === '') {
+    //   console.error('Creating SElement with empty name');
+    // }
 
     if (parent && this.equals(parent)) {
       throw new Error('Self loop in model\n');
