@@ -223,6 +223,9 @@ class SElement {
             ((_a = (_b = this.attrs)[name]) !== null && _a !== void 0 ? _a : (_b[name] = [])).push(value);
         }
     }
+    getAttributes() {
+        return this.attrs;
+    }
     setType(t) {
         this.attrs.type = t;
     }

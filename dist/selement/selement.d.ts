@@ -22,6 +22,9 @@ declare class SElement {
     traverseElements(visit: (e: SElement) => void): void;
     getAncestors(): SElement[];
     addAttribute(name: string, value: string): void;
+    getAttributes(): {
+        [key: string]: string | string[];
+    };
     setType(t: string): void;
     getType(): string;
     getPath(): string;

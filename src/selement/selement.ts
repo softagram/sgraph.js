@@ -265,6 +265,10 @@ class SElement {
     }
   }
 
+  getAttributes() {
+    return this.attrs;
+  }
+
   setType(t: string) {
     this.attrs.type = t;
   }
