@@ -1,6 +1,6 @@
 import { SElement } from '.';
 
-const lowestComonAncestor = (a: SElement, b: SElement) => {
+const lowestCommonAncestor = (a: SElement, b: SElement) => {
   const aAncestors = a.getAncestors().reverse();
   const bAncestors = b.getAncestors().reverse();
   let lca;
@@ -13,4 +13,4 @@ const lowestComonAncestor = (a: SElement, b: SElement) => {
   return lca;
 };
 
-export { lowestComonAncestor };
+export { lowestCommonAncestor };

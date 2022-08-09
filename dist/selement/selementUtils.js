@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.lowestComonAncestor = void 0;
-const lowestComonAncestor = (a, b) => {
+exports.lowestCommonAncestor = void 0;
+const lowestCommonAncestor = (a, b) => {
     const aAncestors = a.getAncestors().reverse();
     const bAncestors = b.getAncestors().reverse();
     let lca;
@@ -15,4 +15,4 @@ const lowestComonAncestor = (a, b) => {
     }
     return lca;
 };
-exports.lowestComonAncestor = lowestComonAncestor;
+exports.lowestCommonAncestor = lowestCommonAncestor;

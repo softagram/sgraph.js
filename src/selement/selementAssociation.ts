@@ -1,4 +1,4 @@
-import { SElement, lowestComonAncestor } from '.';
+import { SElement, lowestCommonAncestor } from '.';
 
 class SElementAssociation {
   fromElement: SElement;
@@ -46,7 +46,7 @@ class SElementAssociation {
       return 0;
     }
 
-    const lca = lowestComonAncestor(this.fromElement, this.toElement);
+    const lca = lowestCommonAncestor(this.fromElement, this.toElement);
 
     const levelsBetween = (e: SElement, ancestor: SElement) => {
       let steps = 0;

@@ -41,7 +41,7 @@ class SElementAssociation {
         if ((_a = this.fromElement) === null || _a === void 0 ? void 0 : _a.equals(this.toElement)) {
             return 0;
         }
-        const lca = (0, _1.lowestComonAncestor)(this.fromElement, this.toElement);
+        const lca = (0, _1.lowestCommonAncestor)(this.fromElement, this.toElement);
         const levelsBetween = (e, ancestor) => {
             let steps = 0;
             let nextAncestor = e.parent;
