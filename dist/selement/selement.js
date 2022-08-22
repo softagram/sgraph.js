@@ -28,7 +28,7 @@ class SElement {
         this.humanReadableName = '';
         if (parent) {
             this.parent = parent;
-            if (!(this.name in this.parent.childrenObject)) {
+            if (!Object.keys(this.parent.childrenObject).includes(this.name)) {
                 this.parent.children.push(this);
                 this.parent.childrenObject[this.name] = this;
             }
@@ -48,7 +48,7 @@ class SElement {
             console.error('Error with data model loop');
             throw new Error('Aborting due to addChild this not equal to child violation');
         }
-        if (!(child.name in this.childrenObject)) {
+        if (!Object.keys(this.childrenObject).includes(child.name)) {
             this.children.push(child);
             this.childrenObject[child.name] = child;
         }
@@ -111,7 +111,7 @@ class SElement {
         other.incoming = [];
         for (let [key, value] of Object.entries(other.attrs)) {
             if (!ignoreAttrs && key !== 'type') {
-                if (!(key in this.attrs)) {
+                if (!Object.keys(this.attrs).includes(key)) {
                     this.attrs[key] = value;
                 }
                 else if (this.attrs[key] !== value) {
@@ -148,7 +148,7 @@ class SElement {
         const index = this.children.indexOf(child);
         if (index !== -1)
             this.children.splice(index, 1);
-        if (child.name in this.childrenObject) {
+        if (Object.keys(this.childrenObject).includes(child.name)) {
             delete this.childrenObject[child.name];
         }
         else {

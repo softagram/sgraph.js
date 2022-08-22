@@ -27,7 +27,7 @@ class SGraphXMLParser {
                     if (this.currentElement &&
                         this.currentElementPath &&
                         this.currentElementPath.length > 0 &&
-                        !(name in this.ignoredAttributes)) {
+                        !this.ignoredAttributes.includes(name)) {
                         this.currentElement.addAttribute(name, value);
                     }
                 }
@@ -52,7 +52,7 @@ class SGraphXMLParser {
                     else if (aname === 'i') {
                         this.idToElemMap[avalue] = this.currentElement;
                     }
-                    else if (aname !== 'n' && !(aname in this.ignoredAttributes)) {
+                    else if (aname !== 'n' && !this.ignoredAttributes.includes(aname)) {
                         this.currentElement.addAttribute(aname, avalue);
                     }
                 }
@@ -159,10 +159,10 @@ class SGraphXMLParser {
         if (this.acceptAllAssocTypes) {
         }
         else if (!this.acceptableAssocTypes && this.ignoreAssocTypes) {
-            if (t in this.ignoreAssocTypes)
+            if (this.ignoreAssocTypes.has(t))
                 return;
         }
-        else if (!this.acceptableAssocTypes || t in this.acceptableAssocTypes) {
+        else if (!this.acceptableAssocTypes || this.acceptableAssocTypes.has(t)) {
         }
         else if (this.acceptableAssocTypes &&
             this.acceptableAssocTypes.size === 0) {

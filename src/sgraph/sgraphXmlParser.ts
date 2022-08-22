@@ -61,7 +61,7 @@ export default class SGraphXMLParser {
           this.currentElement &&
           this.currentElementPath &&
           this.currentElementPath.length > 0 &&
-          !(name in this.ignoredAttributes)
+          !this.ignoredAttributes.includes(name)
         ) {
           this.currentElement.addAttribute(name, value);
         }
@@ -85,7 +85,7 @@ export default class SGraphXMLParser {
           this.currentElement.setType(avalue);
         } else if (aname === 'i') {
           this.idToElemMap[avalue] = this.currentElement;
-        } else if (aname !== 'n' && !(aname in this.ignoredAttributes)) {
+        } else if (aname !== 'n' && !this.ignoredAttributes.includes(aname)) {
           this.currentElement.addAttribute(aname, avalue);
         }
       }
@@ -144,8 +144,8 @@ export default class SGraphXMLParser {
   createReference(i: string, t: string) {
     if (this.acceptAllAssocTypes) {
     } else if (!this.acceptableAssocTypes && this.ignoreAssocTypes) {
-      if (t in this.ignoreAssocTypes) return;
-    } else if (!this.acceptableAssocTypes || t in this.acceptableAssocTypes) {
+      if (this.ignoreAssocTypes.has(t)) return;
+    } else if (!this.acceptableAssocTypes || this.acceptableAssocTypes.has(t)) {
     } else if (
       this.acceptableAssocTypes &&
       this.acceptableAssocTypes.size === 0
