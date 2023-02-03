@@ -78,6 +78,45 @@ class SGraph {
     return this.rootNode;
   }
 
+  createOrGetElement(elem: SElement): SElement {
+    const elems = elem.getPathAsList().reverse();
+
+    let p = this.rootNode;
+    for (let i = 0; i < elems.length; i++) {
+      const s = elems[i];
+      const child = p.getChildByName(s);
+      if (child) {
+        p = child;
+      } else {
+        return p.createElements(elems, i);
+      }
+    }
+    return p;
+  }
+  /** 
+      Create or get element matching this element, yielding also boolean 
+      to indicate if new was created.
+      @param element the element to create or get
+      @returns tuple of the matched element and boolean describing if new element was created.
+      */
+  createOrGetElementWithNew(element: SElement): {
+    element: SElement;
+    isNew: boolean;
+  } {
+    const elements = element.getPathAsList().reverse();
+    let p = this.rootNode;
+    for (let i = 0; i < elements.length; i++) {
+      const s = elements[i];
+      const child = p.getChildByName(s);
+      if (child) {
+        p = child;
+      } else {
+        return { element: p.createElements(elements, i), isNew: true };
+      }
+    }
+    return { element: p, isNew: false };
+  }
+
   findElementFromPath(i: string): SElement | undefined {
     if (!this.rootNode) return undefined;
     if (i.length > 0) return this.rootNode.findElement(i);

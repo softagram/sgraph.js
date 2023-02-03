@@ -265,6 +265,10 @@ class SElement {
     }
   }
 
+  setAttributes(attributes: any) {
+    this.attrs = attributes;
+  }
+
   getAttributes() {
     return this.attrs;
   }
@@ -306,6 +310,23 @@ class SElement {
 
   typeEquals(t: any) {
     return this.attrs.type === t;
+  }
+  getPathAsList() {
+    const a = [];
+    a.push(this.name);
+    let p = this.parent;
+    while (p && p.parent) {
+      a.push(p.name);
+      p = p.parent;
+    }
+    return a;
+  }
+  createElements(elements: string[], startFrom: number) {
+    let parent = this as SElement;
+    for (let i = startFrom; i < elements.length; i++) {
+      parent = new SElement(elements[i], parent);
+    }
+    return parent;
   }
 }
 
