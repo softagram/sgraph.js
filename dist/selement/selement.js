@@ -223,6 +223,9 @@ class SElement {
             ((_a = (_b = this.attrs)[name]) !== null && _a !== void 0 ? _a : (_b[name] = [])).push(value);
         }
     }
+    setAttributes(attributes) {
+        this.attrs = attributes;
+    }
     getAttributes() {
         return this.attrs;
     }
@@ -259,6 +262,23 @@ class SElement {
     }
     typeEquals(t) {
         return this.attrs.type === t;
+    }
+    getPathAsList() {
+        const a = [];
+        a.push(this.name);
+        let p = this.parent;
+        while (p && p.parent) {
+            a.push(p.name);
+            p = p.parent;
+        }
+        return a;
+    }
+    createElements(elements, startFrom) {
+        let parent = this;
+        for (let i = startFrom; i < elements.length; i++) {
+            parent = new SElement(elements[i], parent);
+        }
+        return parent;
     }
 }
 exports.SElement = SElement;

@@ -1,0 +1,60 @@
+<model version="2.1">
+  <elements>
+    <e n="nginx" >
+      <e n="src" >
+        <e n="core" >
+          <e i="6" n="nginx.c" >
+            <r r="2" t="inc" />
+            <r r="3" t="inc" />
+          </e>
+          <e i="2" n="nginx.h" >
+             <e t="testtype" n="testname"/>
+          </e>
+        </e>
+      </e>
+    </e>
+    <e n="foo" >
+      <e n="bar" >
+        <e n="test" >
+           <e n="test1" />
+           <e n="test2" />
+        </e>
+      </e>
+    </e>
+    <e n="used-directly-from-nginx" >
+      <e n="src" >
+        <e i="3" n="used-directly-from-nginx.c" someattribute="foo" >
+            <r r="4" t="inc" />
+            <e n="child">
+              <e n="child-of-child">
+                <e n="child-of-child-of-child" test_attribute1="testvalue1"/>
+              </e>
+            </e>
+        </e>
+      </e>
+    </e>
+    <e n="used-indirectly-from-nginx" >
+      <e n="src" >
+        <e i="4" n="used-indirectly-from-nginx.c" someattribute="foo" >
+          <r r="7" t="inc" />
+          <e n="child">
+            <e n="child-of-child">
+              <e n="child-of-child-of-child" test_attribute2="testvalue2"/>
+            </e>
+          </e>
+        </e>
+        <e i="7" n="cyclical-problem.c" description="simple dependency cycle">
+          <r r="4" t="inc" />
+        </e>
+      </e>
+    </e>
+    <e n="directory-that-depends-on-nginx.c" >
+      <e n="bar" >
+        <e n="uses-nginx.c-file" someattribute="foo">
+          <r r="6" t="inc" />
+          <e n="testname" t="testtype"/>
+        </e>
+      </e>
+    </e>
+  </elements>
+</model>

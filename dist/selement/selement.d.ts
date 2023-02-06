@@ -22,6 +22,7 @@ declare class SElement {
     traverseElements(visit: (e: SElement) => void): void;
     getAncestors(): SElement[];
     addAttribute(name: string, value: string): void;
+    setAttributes(attributes: any): void;
     getAttributes(): {
         [key: string]: string | string[];
     };
@@ -32,5 +33,7 @@ declare class SElement {
     updateHash(): void;
     equals(other: SElement): boolean;
     typeEquals(t: any): boolean;
+    getPathAsList(): string[];
+    createElements(elements: string[], startFrom: number): SElement;
 }
 export { SElement };
