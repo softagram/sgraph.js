@@ -2,6 +2,9 @@ import { FilterAssociations, ModelApi, ModelLoader, SGraph } from '../src';
 describe('ModelApi tests', () => {
   let model: SGraph;
   let modelApi: ModelApi;
+  const CORE_PATH = '/nginx/src/core/';
+  const NGINXC_PATH = `${CORE_PATH}nginx.c`;
+  const NGINXH_PATH = `${CORE_PATH}nginx.h`;
   beforeEach(async () => {
     const loadedModel = await new ModelLoader().load('test/nginx_model.xml');
     if (loadedModel) {
@@ -32,7 +35,7 @@ describe('ModelApi tests', () => {
     // If Ignore mode is set for outgoing dependencies, subgraph should not include nginx.c -> nginx.h
     assertChildrenOfCoreAndReturnSubgraph(
       modelApi,
-      '/nginx/src/core/nginx.c',
+      NGINXC_PATH,
       model,
       FilterAssociations.Ignore,
       FilterAssociations.Ignore,
@@ -45,7 +48,7 @@ describe('ModelApi tests', () => {
     // nginx.c -> used-directly-from-nginx
     const subgraph = assertChildrenOfCoreAndReturnSubgraph(
       modelApi,
-      '/nginx/src/core/nginx.c',
+      NGINXC_PATH,
       model,
       FilterAssociations.Direct,
       FilterAssociations.Ignore,
@@ -60,7 +63,7 @@ describe('ModelApi tests', () => {
 
     const subgraph = assertChildrenOfCoreAndReturnSubgraph(
       modelApi,
-      '/nginx/src/core/nginx.c',
+      NGINXC_PATH,
       model,
       FilterAssociations.DirectAndIndirect,
       FilterAssociations.Ignore,
@@ -78,7 +81,7 @@ describe('ModelApi tests', () => {
     // nginx.c -> nginx.h
     const subgraph = assertChildrenOfCoreAndReturnSubgraph(
       modelApi,
-      '/nginx/src/core/nginx.h',
+      NGINXH_PATH,
       model,
       FilterAssociations.Ignore,
       FilterAssociations.Direct,
@@ -96,7 +99,7 @@ describe('ModelApi tests', () => {
     // uses-nginx.c-file -> nginx.c -> nginx.h
     const subgraph = assertChildrenOfCoreAndReturnSubgraph(
       modelApi,
-      '/nginx/src/core/nginx.h',
+      NGINXH_PATH,
       model,
       FilterAssociations.Ignore,
       FilterAssociations.DirectAndIndirect,
@@ -112,6 +115,38 @@ describe('ModelApi tests', () => {
     expect(directoryThatDependsOnNginxC.name).toBe(
       'directory-that-depends-on-nginx.c'
     );
+  });
+  it('does not add the same association twice in filter model', async () => {
+    const subgraph = assertChildrenOfCoreAndReturnSubgraph(
+      modelApi,
+      NGINXC_PATH,
+      model,
+      FilterAssociations.DirectAndIndirect,
+      FilterAssociations.DirectAndIndirect,
+      2,
+      ['nginx.c', 'nginx.h']
+    );
+    // Check that nginx.c has only one incoming dependency
+    expect(
+      subgraph.rootNode.children[0].children[0].children[0].children[0].incoming
+        .length
+    ).toBe(1);
+  });
+  it('adds association with different type twice', async () => {
+    const element = model.createOrGetElementFromPath('/foo/bar/test/test1');
+    const subgraph = modelApi.filterModel(
+      element,
+      model,
+      FilterAssociations.DirectAndIndirect,
+      FilterAssociations.DirectAndIndirect
+    );
+    // Check that test1 has two incoming dependencies whose type is different
+    const incomingDependenciesOfTest1 =
+      subgraph.rootNode.children[0].children[0].children[0].children[0]
+        .incoming;
+    expect(incomingDependenciesOfTest1.length).toBe(2);
+    expect(incomingDependenciesOfTest1[0].deptype).toBe('inc1');
+    expect(incomingDependenciesOfTest1[1].deptype).toBe('inc2');
   });
 });
 function assertUsedDirectlyIsInSubgraph(subgraph: SGraph) {
