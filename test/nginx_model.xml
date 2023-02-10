@@ -16,8 +16,12 @@
     <e n="foo" >
       <e n="bar" >
         <e n="test" >
-           <e n="test1" />
-           <e n="test2" />
+           <e i="8" n="test1" ></e>
+           <e n="test2" ></e>
+        </e>
+        <e n="testing" >
+          <r r="8" t="inc1" />
+          <r r="8" t="inc2" />
         </e>
       </e>
     </e>

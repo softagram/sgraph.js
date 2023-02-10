@@ -111,7 +111,7 @@ class ModelApi {
   ) => {
     const subGraph = new SGraph(new SElement('', undefined));
     subGraph.createOrGetElementWithNew(sourceElement);
-    const stack = [sourceElement];
+    const stack = new Set<SElement>([sourceElement]);
 
     const isDescendantOfSourceElement = (element: SElement) => {
       let ancestor = element;
@@ -132,19 +132,19 @@ class ModelApi {
         subGraph.createOrGetElementWithNew(x);
 
       if (isOutgoing) {
-        new SElementAssociation(
+        SElementAssociation.createUniqueElementAssociation(
           other,
           newOrExistingReferredElement,
           elementAssociation.deptype,
           elementAssociation.attrs
-        ).initElems();
+        );
       } else {
-        new SElementAssociation(
+        SElementAssociation.createUniqueElementAssociation(
           newOrExistingReferredElement,
           other,
           elementAssociation.deptype,
           elementAssociation.attrs
-        ).initElems();
+        );
       }
       return {
         newOrExistingReferredElement,
@@ -158,7 +158,7 @@ class ModelApi {
       relatedElement: SElement,
       filterSetting: FilterAssociations,
       isOutgoing: boolean,
-      stack: SElement[],
+      stack: Set<SElement>,
       handled: Set<SElement>
     ) => {
       const descendantOfSrc = isDescendantOfSourceElement(relatedElement);
@@ -187,15 +187,14 @@ class ModelApi {
         // Get all indirectly and directly used elements into the subgraph, including
         // their descendant elements.
         if (!handled.has(relatedElement)) {
-          stack.push(relatedElement);
+          stack.add(relatedElement);
         }
       }
     };
 
     const handled = new Set<SElement>();
     // Traverse related elements from the source graph using stack
-    while (stack.length > 0) {
-      const element = stack.splice(0, 1)[0];
+    for (const element of stack) {
       handled.add(element);
       if (element) {
         const newElememt = subGraph.createOrGetElement(element);
@@ -223,7 +222,9 @@ class ModelApi {
             handled
           );
         }
-        stack.push(...element.children);
+        for (let i = 0; i < element.children.length; i++) {
+          if (!handled.has(element.children[i])) stack.add(element.children[i]);
+        }
       }
     }
 
@@ -242,7 +243,7 @@ class ModelApi {
           subGraphStack.push(child);
           if (correspondingSourceElement) {
             wholeGraphStack.push(
-              correspondingSourceElement.getChildByName(elem.name)
+              correspondingSourceElement.getChildByName(child.name)
             );
           }
         }
