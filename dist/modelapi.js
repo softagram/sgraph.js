@@ -54,7 +54,7 @@ class ModelApi {
         this.filterModel = (sourceElement, sourceGraph, filterOutgoing = FilterAssociations.Direct, filterIncoming = FilterAssociations.Direct) => {
             const subGraph = new sgraph_1.SGraph(new selement_1.SElement('', undefined));
             subGraph.createOrGetElementWithNew(sourceElement);
-            const stack = [sourceElement];
+            const stack = new Set([sourceElement]);
             const isDescendantOfSourceElement = (element) => {
                 let ancestor = element;
                 while (ancestor !== undefined && ancestor.parent != undefined) {
@@ -67,10 +67,10 @@ class ModelApi {
             const createAssociation = (x, other, isOutgoing, elementAssociation) => {
                 const { element: newOrExistingReferredElement, isNew } = subGraph.createOrGetElementWithNew(x);
                 if (isOutgoing) {
-                    new selement_1.SElementAssociation(other, newOrExistingReferredElement, elementAssociation.deptype, elementAssociation.attrs).initElems();
+                    selement_1.SElementAssociation.createUniqueElementAssociation(other, newOrExistingReferredElement, elementAssociation.deptype, elementAssociation.attrs);
                 }
                 else {
-                    new selement_1.SElementAssociation(newOrExistingReferredElement, other, elementAssociation.deptype, elementAssociation.attrs).initElems();
+                    selement_1.SElementAssociation.createUniqueElementAssociation(newOrExistingReferredElement, other, elementAssociation.deptype, elementAssociation.attrs);
                 }
                 return {
                     newOrExistingReferredElement,
@@ -98,14 +98,13 @@ class ModelApi {
                     // Get all indirectly and directly used elements into the subgraph, including
                     // their descendant elements.
                     if (!handled.has(relatedElement)) {
-                        stack.push(relatedElement);
+                        stack.add(relatedElement);
                     }
                 }
             };
             const handled = new Set();
             // Traverse related elements from the source graph using stack
-            while (stack.length > 0) {
-                const element = stack.splice(0, 1)[0];
+            for (const element of stack) {
                 handled.add(element);
                 if (element) {
                     const newElememt = subGraph.createOrGetElement(element);
@@ -116,7 +115,10 @@ class ModelApi {
                     for (const incomingAssociation of element.incoming) {
                         handleAssociation(newElememt, incomingAssociation, incomingAssociation.fromElement, filterIncoming, false, stack, handled);
                     }
-                    stack.push(...element.children);
+                    for (let i = 0; i < element.children.length; i++) {
+                        if (!handled.has(element.children[i]))
+                            stack.add(element.children[i]);
+                    }
                 }
             }
             // Now that elements have been created, copy attribute data from the whole graph, via
@@ -133,7 +135,7 @@ class ModelApi {
                     for (const child of elem.children) {
                         subGraphStack.push(child);
                         if (correspondingSourceElement) {
-                            wholeGraphStack.push(correspondingSourceElement.getChildByName(elem.name));
+                            wholeGraphStack.push(correspondingSourceElement.getChildByName(child.name));
                         }
                     }
                 }
