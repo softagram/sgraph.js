@@ -311,6 +311,7 @@ class SElement {
   typeEquals(t: any) {
     return this.attrs.type === t;
   }
+
   getPathAsList() {
     const a = [];
     a.push(this.name);
@@ -321,12 +322,42 @@ class SElement {
     }
     return a;
   }
+
   createElements(elements: string[], startFrom: number) {
     let parent = this as SElement;
     for (let i = startFrom; i < elements.length; i++) {
       parent = new SElement(elements[i], parent);
     }
     return parent;
+  }
+
+  /**
+   * Returns a list of cyclic dependencies in the form of a list of elements that form a cycle
+   * @returns {SElement[][]} a list of cyclic dependencies
+   */
+  getCyclicDependencies(): SElement[][] {
+    const cyclic: SElement[][] = [];
+    const stack: SElement[] = [];
+    this.#getCyclicDependencies(this, stack, cyclic);
+    return cyclic;
+  }
+  #getCyclicDependencies(
+    element: SElement,
+    stack: SElement[],
+    cyclic: SElement[][],
+    path: SElement[] = []
+  ) {
+    if (stack.includes(element)) {
+      if (element === stack[0]) cyclic.push(path);
+      return;
+    }
+    stack.push(element);
+    element.outgoing.map((ea) =>
+      this.#getCyclicDependencies(ea.toElement, stack, cyclic, [
+        ...path,
+        element,
+      ])
+    );
   }
 }
 

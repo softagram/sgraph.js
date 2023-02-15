@@ -1,7 +1,13 @@
 "use strict";
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _SElement_instances, _SElement_getCyclicDependencies;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SElement = void 0;
 const object_hash_1 = __importDefault(require("object-hash"));
@@ -12,6 +18,7 @@ class SElement {
         // if (name.replace(/\s/g, '') === '') {
         //   console.error('Creating SElement with empty name');
         // }
+        _SElement_instances.add(this);
         this.hash = '';
         this.humanReadableName = '';
         this.attrs = {};
@@ -280,8 +287,30 @@ class SElement {
         }
         return parent;
     }
+    /**
+     * Returns a list of cyclic dependencies in the form of a list of elements that form a cycle
+     * @returns {SElement[][]} a list of cyclic dependencies
+     */
+    getCyclicDependencies() {
+        const cyclic = [];
+        const stack = [];
+        __classPrivateFieldGet(this, _SElement_instances, "m", _SElement_getCyclicDependencies).call(this, this, stack, cyclic);
+        return cyclic;
+    }
 }
 exports.SElement = SElement;
+_SElement_instances = new WeakSet(), _SElement_getCyclicDependencies = function _SElement_getCyclicDependencies(element, stack, cyclic, path = []) {
+    if (stack.includes(element)) {
+        if (element === stack[0])
+            cyclic.push(path);
+        return;
+    }
+    stack.push(element);
+    element.outgoing.map((ea) => __classPrivateFieldGet(this, _SElement_instances, "m", _SElement_getCyclicDependencies).call(this, ea.toElement, stack, cyclic, [
+        ...path,
+        element,
+    ]));
+};
 class SElementMergedException extends Error {
     constructor(message) {
         super(message);

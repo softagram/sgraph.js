@@ -39,5 +39,6 @@ declare class ModelApi {
         topology as in the source graph
         */
     filterModel: (sourceElement: SElement, sourceGraph: SGraph, filterOutgoing?: FilterAssociations, filterIncoming?: FilterAssociations) => SGraph;
+    getCyclicDependencyCycles(): SElement[][];
 }
 export { ModelApi };

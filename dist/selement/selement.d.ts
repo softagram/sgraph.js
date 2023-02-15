@@ -1,5 +1,6 @@
 import { SElementAssociation } from '.';
 declare class SElement {
+    #private;
     private hash;
     name: string;
     humanReadableName: string;
@@ -35,5 +36,10 @@ declare class SElement {
     typeEquals(t: any): boolean;
     getPathAsList(): string[];
     createElements(elements: string[], startFrom: number): SElement;
+    /**
+     * Returns a list of cyclic dependencies in the form of a list of elements that form a cycle
+     * @returns {SElement[][]} a list of cyclic dependencies
+     */
+    getCyclicDependencies(): SElement[][];
 }
 export { SElement };
