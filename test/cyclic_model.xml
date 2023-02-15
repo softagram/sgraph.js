@@ -1,0 +1,36 @@
+<model version="2.1">
+  <elements>
+    <e n="cyclic" t="dir">
+      <e n="cyclic-dep-test" t="repository">
+        <e n=".gitignore" t="file" hash="12bec56fa94572a1f7e241bac0d109679b1e853fde7636475beb07ebd08e9164">
+        </e>
+        <e i="5" n="first.py" t="file" hash="95a9336d92474f850662e49b462923287ed2f7bc1821bda338fb201b267226b6">
+          <r r="7" t="import" />
+          <r r="8" t="import" />
+          <e i="6" n="first" t="function">
+          </e>
+          <e i="4" n="firstdep" t="function">
+          </e>
+        </e>
+        <e n="main.py" t="file" hash="6d8ab81d0dfffa13cc87c27df97ff147a3621899e6adb7775a6eea60e3d1eb1a">
+          <r r="5,8" t="import" info="SF only"/>
+          <r r="6,9" t="import" info="MF only"/>
+        </e>
+        <e i="8" n="second.py" t="file" hash="1b7bd0fd08bc5f9341e9347d8e2e19e971424fcaecc4594173e730616150ec3e">
+          <r r="2,5" t="import" info="SF only"/>
+          <r r="3,4" t="import" info="MF only"/>
+          <e i="9" n="second" t="function">
+          </e>
+          <e i="7" n="seconddep" t="function">
+          </e>
+        </e>
+        <e i="2" n="third.py" t="file" hash="7027018483e38c20443a45ec72a8b05ede52fa0a467d360ea6fe85575fcdd3e2">
+          <r r="5" t="import" info="SF only"/>
+          <r r="4" t="import" info="MF only"/>
+          <e i="3" n="thirddep" t="function">
+          </e>
+        </e>
+      </e>
+    </e>
+  </elements>
+</model>

@@ -164,5 +164,19 @@ class ModelApi {
         recursiveTraverse(this.model.rootNode);
         return matching;
     }
+    getCyclicDependencyCycles() {
+        const cycles = [];
+        this.egm.rootNode.traverseElements((element) => {
+            const depCycles = element.getCyclicDependencies();
+            if (depCycles.length > 0)
+                cycles.push(...depCycles);
+        });
+        return cycles.reduce((acc, cycle) => {
+            if (!acc.some((c) => c.length === cycle.length && c.every((e) => cycle.includes(e)))) {
+                acc.push(cycle);
+            }
+            return acc;
+        }, []);
+    }
 }
 exports.ModelApi = ModelApi;

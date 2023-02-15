@@ -251,6 +251,26 @@ class ModelApi {
     }
     return subGraph;
   };
+
+  getCyclicDependencyCycles() {
+    const cycles: SElement[][] = [];
+
+    this.egm.rootNode.traverseElements((element) => {
+      const depCycles = element.getCyclicDependencies();
+      if (depCycles.length > 0) cycles.push(...depCycles);
+    });
+
+    return cycles.reduce((acc, cycle) => {
+      if (
+        !acc.some(
+          (c) => c.length === cycle.length && c.every((e) => cycle.includes(e))
+        )
+      ) {
+        acc.push(cycle);
+      }
+      return acc;
+    }, [] as SElement[][]);
+  }
 }
 
 export { ModelApi };
