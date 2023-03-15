@@ -16,7 +16,7 @@ declare class SElement {
     addChild(child: SElement): SElement | undefined;
     merge(other: SElement, ignoreType?: boolean, ignoreAttrs?: boolean): void;
     detachChild(child: SElement): void;
-    getChildByName: (name: string) => SElement;
+    getChildByName: (name: string) => SElement | undefined;
     findElement(name: string): SElement | undefined;
     createOrGetElement(n: string): SElement;
     createElementChain(id: string): SElement;

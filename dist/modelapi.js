@@ -135,7 +135,10 @@ class ModelApi {
                     for (const child of elem.children) {
                         subGraphStack.push(child);
                         if (correspondingSourceElement) {
-                            wholeGraphStack.push(correspondingSourceElement.getChildByName(child.name));
+                            const childElement = correspondingSourceElement.getChildByName(child.name);
+                            if (childElement) {
+                                wholeGraphStack.push(childElement);
+                            }
                         }
                     }
                 }
