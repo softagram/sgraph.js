@@ -31,6 +31,9 @@ class SElementAssociation {
     });
     // Do not create association if the same association already exists
     if (existingAssociations.length > 0) {
+      // Combine attributes to the existing association
+      const existingAttributes = existingAssociations[0].getAttributes();
+      existingAssociations[0].setAttrs({ ...existingAttributes, ...depattrs });
       return {
         existingOrNewAssociation: existingAssociations[0],
         isNew: false,
