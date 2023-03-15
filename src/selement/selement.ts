@@ -194,7 +194,12 @@ class SElement {
     this.updateHash();
   }
 
-  getChildByName = (name: string) => this.childrenObject[name];
+  getChildByName = (name: string): SElement | undefined => {
+    if (Object.getOwnPropertyNames(this.childrenObject).includes(name)) {
+      return this.childrenObject[name];
+    }
+    return undefined;
+  };
 
   findElement(name: string): SElement | undefined {
     if (name.startsWith('/')) {

@@ -26,7 +26,12 @@ class SElement {
         this.childrenObject = {};
         this.outgoing = [];
         this.incoming = [];
-        this.getChildByName = (name) => this.childrenObject[name];
+        this.getChildByName = (name) => {
+            if (Object.getOwnPropertyNames(this.childrenObject).includes(name)) {
+                return this.childrenObject[name];
+            }
+            return undefined;
+        };
         this.getHash = () => this.hash;
         if (parent && this.equals(parent)) {
             throw new Error('Self loop in model\n');
