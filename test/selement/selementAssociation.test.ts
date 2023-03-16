@@ -62,6 +62,23 @@ describe('selement association tests', () => {
       attribute2: 'value2',
     });
   });
+  it('should throw an exception if trying to create an association with the same type and the same attribute but different value', () => {
+    const { element1, element2 } = createGraphAndElements();
+    SElementAssociation.createUniqueElementAssociation(
+      element1,
+      element2,
+      'deptype',
+      { attribute: 'value1' }
+    );
+    expect(() =>
+      SElementAssociation.createUniqueElementAssociation(
+        element1,
+        element2,
+        'deptype',
+        { attribute: 'value2' }
+      )
+    ).toThrow(Error);
+  });
 });
 
 const createGraphAndElements = () => {

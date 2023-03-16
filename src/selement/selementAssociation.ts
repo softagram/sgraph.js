@@ -4,7 +4,7 @@ class SElementAssociation {
   fromElement: SElement;
   toElement: SElement;
   deptype?: string;
-  attrs?: any;
+  attrs?: Record<string, string>;
 
   /**
      Create association between two elements if there already does not exist a similar association.
@@ -21,7 +21,7 @@ class SElementAssociation {
     fromElement: SElement,
     toElement: SElement,
     deptype?: any,
-    depattrs: any = {}
+    depattrs: Record<string, string> = {}
   ): { existingOrNewAssociation: SElementAssociation; isNew: boolean } {
     const existingAssociations = toElement.incoming.filter((incoming) => {
       const fromElementMatches = incoming.fromElement === fromElement;
@@ -33,6 +33,18 @@ class SElementAssociation {
     if (existingAssociations.length > 0) {
       // Combine attributes to the existing association
       const existingAttributes = existingAssociations[0].getAttributes();
+      if (existingAttributes) {
+        // Check that there aren't same attributes with different values
+        Object.keys(depattrs).forEach((attributeName) => {
+          if (Object.keys(existingAttributes).includes(attributeName)) {
+            if (existingAttributes[attributeName] !== depattrs[attributeName]) {
+              throw new SElementAssociationException(
+                `Can not create association of type ${deptype} from ${fromElement.name} to ${toElement.name} due to attribute conflict: attribute with name ${attributeName} ${existingAttributes[attributeName]} would be replaced by ${depattrs[attributeName]}`
+              );
+            }
+          }
+        });
+      }
       existingAssociations[0].setAttrs({ ...existingAttributes, ...depattrs });
       return {
         existingOrNewAssociation: existingAssociations[0],
@@ -57,10 +69,12 @@ class SElementAssociation {
   }
 
   calculateCompareStatus() {
-    const compare = this.attrs['compare'];
-    if (compare === 'added') return 1;
-    if (compare === 'removed') return 2;
-    if (compare === 'changed') return 3;
+    if (this.attrs) {
+      const compare = this.attrs['compare'];
+      if (compare === 'added') return 1;
+      if (compare === 'removed') return 2;
+      if (compare === 'changed') return 3;
+    }
     return 0;
   }
 
@@ -112,6 +126,13 @@ class SElementAssociation {
   getToPath = () => this.toElement?.getPath();
   getType = () => this.deptype;
   getAttributes = () => this.attrs;
+}
+
+class SElementAssociationException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SElemenAssociationException';
+  }
 }
 
 export { SElementAssociation };
