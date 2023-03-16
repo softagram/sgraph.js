@@ -3,7 +3,7 @@ declare class SElementAssociation {
     fromElement: SElement;
     toElement: SElement;
     deptype?: string;
-    attrs?: any;
+    attrs?: Record<string, string>;
     /**
        Create association between two elements if there already does not exist a similar association.
        The association is considered to be similar if toElement has an incoming association with the
@@ -15,7 +15,7 @@ declare class SElementAssociation {
        @returns {SElement, boolean} Return an object containing the existing or new element and a
        boolean indicating if a new element was created (true if new was created, false otherwise)
      */
-    static createUniqueElementAssociation(fromElement: SElement, toElement: SElement, deptype?: any, depattrs?: any): {
+    static createUniqueElementAssociation(fromElement: SElement, toElement: SElement, deptype?: any, depattrs?: Record<string, string>): {
         existingOrNewAssociation: SElementAssociation;
         isNew: boolean;
     };
@@ -30,6 +30,6 @@ declare class SElementAssociation {
     getFromPath: () => string;
     getToPath: () => string;
     getType: () => string | undefined;
-    getAttributes: () => any;
+    getAttributes: () => Record<string, string> | undefined;
 }
 export { SElementAssociation };
