@@ -3,6 +3,12 @@ import { SGraph } from '../sgraph';
 
 const tab = '\t';
 
+/**
+ * Converts SGraph to DOT format used by Graphviz.
+ * @see https://graphviz.org/doc/info/lang.html
+ * @param graph SGraph
+ * @returns DOT string
+ */
 const sgraphToDot = (graph: SGraph): string => {
   const dot: string[] = [];
   const deps: [string, string, string | undefined][] = [];
