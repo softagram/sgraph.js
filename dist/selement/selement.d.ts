@@ -1,4 +1,5 @@
 import { SElementAssociation } from '.';
+export declare const NOT_KNOWN_TYPE = "<not known>";
 declare class SElement {
     #private;
     private hash;
