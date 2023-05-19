@@ -9,10 +9,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _SElement_instances, _SElement_getCyclicDependencies;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SElement = void 0;
+exports.SElement = exports.NOT_KNOWN_TYPE = void 0;
 const object_hash_1 = __importDefault(require("object-hash"));
 const _1 = require(".");
 const DEBUG = true;
+exports.NOT_KNOWN_TYPE = '<not known>';
 class SElement {
     constructor(name, parent) {
         // if (name.replace(/\s/g, '') === '') {
@@ -46,7 +47,7 @@ class SElement {
             }
             else {
                 if (DEBUG) {
-                    throw new Error(`Error: overlapping elements related to ${this.name} under ${this.parent.getPath()}, types: '<not known>' and ${this.parent.childrenObject[this.name].getType()}`);
+                    throw new Error(`Error: overlapping elements related to ${this.name} under ${this.parent.getPath()}, types: ${exports.NOT_KNOWN_TYPE} and ${this.parent.childrenObject[this.name].getType()}`);
                 }
                 else {
                     throw new SElementMergedException(`Element ${this.name} tried to be merged with an existing element ${this.parent.getPath()}`);
@@ -245,7 +246,7 @@ class SElement {
         this.attrs.type = t;
     }
     getType() {
-        return this.attrs.type || '<not known>';
+        return this.attrs.type || exports.NOT_KNOWN_TYPE;
     }
     getPath() {
         var _a;

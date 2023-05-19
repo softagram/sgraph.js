@@ -2,6 +2,7 @@ import hash from 'object-hash';
 import { SElementAssociation } from '.';
 
 const DEBUG = true;
+export const NOT_KNOWN_TYPE = '<not known>';
 
 class SElement {
   private hash: string = '';
@@ -36,7 +37,7 @@ class SElement {
           throw new Error(
             `Error: overlapping elements related to ${
               this.name
-            } under ${this.parent.getPath()}, types: '<not known>' and ${this.parent.childrenObject[
+            } under ${this.parent.getPath()}, types: ${NOT_KNOWN_TYPE} and ${this.parent.childrenObject[
               this.name
             ].getType()}`
           );
@@ -283,7 +284,7 @@ class SElement {
   }
 
   getType() {
-    return <string>this.attrs.type || '<not known>';
+    return <string>this.attrs.type || NOT_KNOWN_TYPE;
   }
 
   getPath() {

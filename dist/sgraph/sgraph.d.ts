@@ -32,5 +32,6 @@ declare class SGraph {
     findElementFromPath(i: string): SElement | undefined;
     setModelPath(filePath: string): void;
     toEcharts(): EChartsOptions;
+    toXml(): string;
 }
 export { SGraph };
