@@ -163,7 +163,7 @@ class SGraph {
                     const idrefs = elementNumbers.join(',');
                     if (idrefs) {
                         const associationAttributes = (0, sgraph_utils_1.getAttributeString)(attrs, deptype || '', currentIndent);
-                        output = output.concat(`${currentIndent}<r r="${idrefs}"${deptype ? ' t="deptype"' : ''} ${associationAttributes}/>\n`);
+                        output = output.concat(`${currentIndent}<r r="${idrefs}" ${associationAttributes}/>\n`);
                     }
                 });
             });
