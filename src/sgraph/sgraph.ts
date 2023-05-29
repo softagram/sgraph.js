@@ -222,9 +222,7 @@ class SGraph {
               currentIndent
             );
             output = output.concat(
-              `${currentIndent}<r r="${idrefs}"${
-                deptype ? ' t="deptype"' : ''
-              } ${associationAttributes}/>\n`
+              `${currentIndent}<r r="${idrefs}" ${associationAttributes}/>\n`
             );
           }
         });
