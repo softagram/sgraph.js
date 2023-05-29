@@ -1,28 +1,9 @@
 import { SElement, SElementAssociation, SGraph } from '../../src';
 
-describe('sgraph tests', () => {
-  it('should give out correct xml from graph', () => {
-    const element = new SElement('test');
-    element.setAttributes({ attribute1: 'value1', attribute2: 'value2' });
-    const childElement1 = new SElement('child1');
-    const childElement2 = new SElement('child2');
-    const secondLevelChild = new SElement('secondLevelChild');
-    childElement1.addChild(secondLevelChild);
-    element.addChild(childElement1);
-    element.addChild(childElement2);
-    const thirdLevelChild = new SElement('thirdLevelChild');
-    thirdLevelChild.addAttribute('test', 'value');
-    thirdLevelChild.addAttribute('type', 'repository');
-    secondLevelChild.addChild(thirdLevelChild);
-    SElementAssociation.createUniqueElementAssociation(
-      childElement1,
-      childElement2
-    );
-    const graph = new SGraph(element);
-    const expectedXml = `<model version="2.1">
+const getExpectedXml = (associationAttributes: string) => `<model version="2.1">
 <elements>
     <e  n="child1"  >
-    <r r="2"  />
+    <r r="2" ${associationAttributes}/>
       <e  n="secondLevelChild"  >
         <e  n="thirdLevelChild"  t="repository"
            test="value" >
@@ -34,7 +15,10 @@ describe('sgraph tests', () => {
 </elements>
 </model>
 `;
-    expect(graph.toXml()).toBe(expectedXml);
+describe('sgraph tests', () => {
+  it('should give out correct xml from graph', () => {
+    const graph = getSgraphWithAssociation();
+    expect(graph.toXml()).toBe(getExpectedXml(' '));
   });
 
   it('should handle invalidCharacters', () => {
@@ -84,4 +68,44 @@ describe('sgraph tests', () => {
 `;
     expect(graph.toXml()).toBe(expectedXml);
   });
+
+  it('should print correct association type and attrubutes', () => {
+    const graph1 = getSgraphWithAssociation('rest_api');
+    expect(graph1.toXml()).toBe(getExpectedXml(' t="rest_api"\n       '));
+    const graph2 = getSgraphWithAssociation('rest_api', {
+      attribute1: 'attributeValue1',
+      attribute2: 'attributeValue2',
+    });
+    expect(graph2.toXml()).toBe(
+      getExpectedXml(
+        ' t="rest_api"\n       attribute1="attributeValue1" attribute2="attributeValue2"'
+      )
+    );
+  });
 });
+
+const getSgraphWithAssociation = (
+  associationType?: string | undefined,
+  associationAttributes?: Record<string, string> | undefined
+) => {
+  const element = new SElement('test');
+  element.setAttributes({ attribute1: 'value1', attribute2: 'value2' });
+  const childElement1 = new SElement('child1');
+  const childElement2 = new SElement('child2');
+  const secondLevelChild = new SElement('secondLevelChild');
+  childElement1.addChild(secondLevelChild);
+  element.addChild(childElement1);
+  element.addChild(childElement2);
+  const thirdLevelChild = new SElement('thirdLevelChild');
+  thirdLevelChild.addAttribute('test', 'value');
+  thirdLevelChild.addAttribute('type', 'repository');
+  secondLevelChild.addChild(thirdLevelChild);
+  SElementAssociation.createUniqueElementAssociation(
+    childElement1,
+    childElement2,
+    associationType,
+    associationAttributes
+  );
+  const graph = new SGraph(element);
+  return graph;
+};
