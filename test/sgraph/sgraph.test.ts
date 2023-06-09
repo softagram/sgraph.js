@@ -3,7 +3,7 @@ import { SElement, SElementAssociation, SGraph } from '../../src';
 const getExpectedXml = (associationAttributes: string) => `<model version="2.1">
 <elements>
     <e  n="child1"  >
-    <r r="2" ${associationAttributes}/>
+    <r r="2,3" ${associationAttributes}/>
       <e  n="secondLevelChild"  >
         <e  n="thirdLevelChild"  t="repository"
            test="value" >
@@ -11,6 +11,8 @@ const getExpectedXml = (associationAttributes: string) => `<model version="2.1">
       </e>
     </e>
     <e  i="2"  n="child2"  >
+    </e>
+    <e  i="3"  n="child3"  >
     </e>
 </elements>
 </model>
@@ -92,10 +94,12 @@ const getSgraphWithAssociation = (
   element.setAttributes({ attribute1: 'value1', attribute2: 'value2' });
   const childElement1 = new SElement('child1');
   const childElement2 = new SElement('child2');
+  const childElement3 = new SElement('child3');
   const secondLevelChild = new SElement('secondLevelChild');
   childElement1.addChild(secondLevelChild);
   element.addChild(childElement1);
   element.addChild(childElement2);
+  element.addChild(childElement3);
   const thirdLevelChild = new SElement('thirdLevelChild');
   thirdLevelChild.addAttribute('test', 'value');
   thirdLevelChild.addAttribute('type', 'repository');
@@ -103,6 +107,12 @@ const getSgraphWithAssociation = (
   SElementAssociation.createUniqueElementAssociation(
     childElement1,
     childElement2,
+    associationType,
+    associationAttributes
+  );
+  SElementAssociation.createUniqueElementAssociation(
+    childElement1,
+    childElement3,
     associationType,
     associationAttributes
   );
