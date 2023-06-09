@@ -160,12 +160,12 @@ class SGraph {
                     else {
                         throw Error(`No numeric id for ${toElement.getPath()} dep from ${association.fromElement.name}`);
                     }
-                    const idrefs = elementNumbers.join(',');
-                    if (idrefs) {
-                        const associationAttributes = (0, sgraph_utils_1.getAttributeString)(attrs, deptype || '', currentIndent);
-                        output = output.concat(`${currentIndent}<r r="${idrefs}" ${associationAttributes}/>\n`);
-                    }
                 });
+                const idrefs = elementNumbers.join(',');
+                if (idrefs) {
+                    const associationAttributes = (0, sgraph_utils_1.getAttributeString)(attrs, deptype || '', currentIndent);
+                    output = output.concat(`${currentIndent}<r r="${idrefs}" ${associationAttributes}/>\n`);
+                }
             });
             const children = element.children.sort(sgraph_utils_1.elementSort);
             children.forEach((child) => (output = dumpNode(child, elementToNumber, recursionLevel + 1, output)));

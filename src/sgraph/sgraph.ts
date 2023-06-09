@@ -214,18 +214,18 @@ class SGraph {
               }`
             );
           }
-          const idrefs = elementNumbers.join(',');
-          if (idrefs) {
-            const associationAttributes = getAttributeString(
-              attrs as { [key: string]: string | string[] },
-              deptype || '',
-              currentIndent
-            );
-            output = output.concat(
-              `${currentIndent}<r r="${idrefs}" ${associationAttributes}/>\n`
-            );
-          }
         });
+        const idrefs = elementNumbers.join(',');
+        if (idrefs) {
+          const associationAttributes = getAttributeString(
+            attrs as { [key: string]: string | string[] },
+            deptype || '',
+            currentIndent
+          );
+          output = output.concat(
+            `${currentIndent}<r r="${idrefs}" ${associationAttributes}/>\n`
+          );
+        }
       });
 
       const children = element.children.sort(elementSort);
