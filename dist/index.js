@@ -18,3 +18,4 @@ __exportStar(require("./modelapi"), exports);
 __exportStar(require("./loaders"), exports);
 __exportStar(require("./sgraph"), exports);
 __exportStar(require("./selement"), exports);
+__exportStar(require("./converters"), exports);
