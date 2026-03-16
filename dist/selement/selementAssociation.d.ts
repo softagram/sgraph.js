@@ -26,6 +26,7 @@ declare class SElementAssociation {
         [key: string]: any;
     }): void;
     remove(): void;
+    addAttribute(name: string, value: string): void;
     getDependencyLength(): number;
     getFromPath: () => string;
     getToPath: () => string;

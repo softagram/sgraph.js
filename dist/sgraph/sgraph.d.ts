@@ -32,6 +32,15 @@ declare class SGraph {
     findElementFromPath(i: string): SElement | undefined;
     setModelPath(filePath: string): void;
     toEcharts(): EChartsOptions;
+    getDepth(): number;
+    calculateModelStats(): {
+        dependenciesCount: number;
+        nodesCount: number;
+        depTypeCounts: {
+            [key: string]: number;
+        };
+        depToElemRatio: number;
+    };
     toXml(): string;
 }
 export { SGraph };

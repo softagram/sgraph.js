@@ -139,6 +139,31 @@ class SGraph {
     return ec;
   }
 
+  getDepth(): number {
+    let depth = 0;
+    for (const child of this.rootNode.children) {
+      depth = Math.max(child.getMaxDepth(1), depth);
+    }
+    return depth;
+  }
+
+  calculateModelStats(): {
+    dependenciesCount: number;
+    nodesCount: number;
+    depTypeCounts: { [key: string]: number };
+    depToElemRatio: number;
+  } {
+    const dependenciesCount = this.rootNode.getEACount();
+    const nodesCount = this.rootNode.getNodeCount();
+    const depTypeCounts: { [key: string]: number } = {};
+    this.rootNode.getEATypeCounts(depTypeCounts);
+    const depToElemRatio =
+      nodesCount > 0
+        ? Math.round((dependenciesCount / nodesCount) * 100) / 100
+        : 0;
+    return { dependenciesCount, nodesCount, depTypeCounts, depToElemRatio };
+  }
+
   toXml() {
     const rootNode = this.rootNode;
     const counter = new Counter();

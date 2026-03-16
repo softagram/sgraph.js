@@ -92,10 +92,15 @@ class SElementAssociation {
       this.fromElement?.outgoing.indexOf(this),
       1
     );
-    this.fromElement?.incoming.splice(
-      this.fromElement?.incoming.indexOf(this),
+    this.toElement?.incoming.splice(
+      this.toElement?.incoming.indexOf(this),
       1
     );
+  }
+
+  addAttribute(name: string, value: string) {
+    if (!this.attrs) this.attrs = {};
+    this.attrs[name] = value;
   }
 
   getDependencyLength() {

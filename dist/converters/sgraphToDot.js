@@ -2,6 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sgraphToDot = void 0;
 const tab = '\t';
+/**
+ * Converts SGraph to DOT format used by Graphviz.
+ * @see https://graphviz.org/doc/info/lang.html
+ * @param graph SGraph
+ * @returns DOT string
+ */
 const sgraphToDot = (graph) => {
     const dot = [];
     const deps = [];
