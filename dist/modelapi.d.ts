@@ -20,6 +20,9 @@ declare class ModelApi {
     getCallingFunctions: (element: SElement) => SElement[];
     getUsedElements: (element: SElement) => SElement[];
     getUserElements: (element: SElement) => SElement[];
+    getElementByPath(path: string): SElement | undefined;
+    filter(filterFunc: (element: SElement) => boolean): SElement[];
+    getChildrenByType(element: SElement, elemType: string): SElement[];
     createDescendants: (relatedElement: SElement, newOrExistingReferredElement: SElement) => void;
     /**
         Filter a sub graph from source graph related to source element.

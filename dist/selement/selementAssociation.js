@@ -78,7 +78,12 @@ class SElementAssociation {
     remove() {
         var _a, _b, _c, _d;
         (_a = this.fromElement) === null || _a === void 0 ? void 0 : _a.outgoing.splice((_b = this.fromElement) === null || _b === void 0 ? void 0 : _b.outgoing.indexOf(this), 1);
-        (_c = this.fromElement) === null || _c === void 0 ? void 0 : _c.incoming.splice((_d = this.fromElement) === null || _d === void 0 ? void 0 : _d.incoming.indexOf(this), 1);
+        (_c = this.toElement) === null || _c === void 0 ? void 0 : _c.incoming.splice((_d = this.toElement) === null || _d === void 0 ? void 0 : _d.incoming.indexOf(this), 1);
+    }
+    addAttribute(name, value) {
+        if (!this.attrs)
+            this.attrs = {};
+        this.attrs[name] = value;
     }
     getDependencyLength() {
         var _a;

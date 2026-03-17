@@ -226,6 +226,160 @@ class SElement {
         }
         return ancestors;
     }
+    getLevel() {
+        let e = this.parent;
+        let level = 0;
+        while (e !== undefined) {
+            e = e.parent;
+            level += 1;
+        }
+        return level;
+    }
+    getRoot() {
+        let p = this;
+        while (p.parent !== undefined) {
+            p = p.parent;
+        }
+        return p;
+    }
+    isDescendantOf(ancestor) {
+        if (this.equals(ancestor))
+            return false;
+        let p = this.parent;
+        while (p !== undefined) {
+            if (p.equals(ancestor))
+                return true;
+            p = p.parent;
+        }
+        return false;
+    }
+    getAncestorOfType(type) {
+        if (this.typeEquals(type))
+            return this;
+        let ancestor = this;
+        while ((ancestor === null || ancestor === void 0 ? void 0 : ancestor.parent) !== undefined) {
+            ancestor = ancestor.parent;
+            if (ancestor.typeEquals(type))
+                return ancestor;
+        }
+        return undefined;
+    }
+    getAncestorOfTypes(types) {
+        const typeSet = types instanceof Set ? types : new Set(types);
+        if (typeSet.has(this.getType()))
+            return this;
+        let ancestor = this;
+        while ((ancestor === null || ancestor === void 0 ? void 0 : ancestor.parent) !== undefined) {
+            ancestor = ancestor.parent;
+            if (typeSet.has(ancestor.getType()))
+                return ancestor;
+        }
+        return undefined;
+    }
+    getAncestorOfLevel(level) {
+        let delta = this.getLevel() - level;
+        let ancestor = this;
+        while (delta > 0 && ancestor !== undefined) {
+            ancestor = ancestor.parent;
+            delta -= 1;
+        }
+        return ancestor;
+    }
+    getDescendants() {
+        const descendants = [];
+        const collect = (element) => {
+            for (const child of element.children) {
+                descendants.push(child);
+                collect(child);
+            }
+        };
+        collect(this);
+        return descendants;
+    }
+    getNodeCount() {
+        let count = 1;
+        for (const child of this.children) {
+            count += child.getNodeCount();
+        }
+        return count;
+    }
+    getEACount() {
+        let count = this.outgoing.length;
+        for (const child of this.children) {
+            count += child.getEACount();
+        }
+        return count;
+    }
+    getEATypes(typeSet) {
+        for (const ea of this.outgoing) {
+            if (ea.deptype)
+                typeSet.add(ea.deptype);
+        }
+        for (const child of this.children) {
+            child.getEATypes(typeSet);
+        }
+    }
+    getEATypeCounts(counts) {
+        for (const ea of this.outgoing) {
+            if (ea.deptype) {
+                counts[ea.deptype] = (counts[ea.deptype] || 0) + 1;
+            }
+        }
+        for (const child of this.children) {
+            child.getEATypeCounts(counts);
+        }
+    }
+    getMaxDepth(currentDepth) {
+        if (this.children.length === 0)
+            return currentDepth;
+        let depth = 0;
+        for (const child of this.children) {
+            depth = Math.max(child.getMaxDepth(currentDepth + 1), depth);
+        }
+        return depth === 0 ? currentDepth : depth;
+    }
+    hasType() {
+        return 'type' in this.attrs && this.attrs.type !== '';
+    }
+    remove(leaveParentUntouched = false) {
+        if (!leaveParentUntouched && this.parent !== undefined) {
+            this.parent.detachChild(this);
+        }
+        for (const ea of [...this.outgoing]) {
+            ea.remove();
+        }
+        this.outgoing = [];
+        for (const ea of [...this.incoming]) {
+            ea.remove();
+        }
+        this.incoming = [];
+        for (const child of this.children) {
+            child.remove(true);
+        }
+        this.children = [];
+        this.childrenObject = {};
+    }
+    rename(newName) {
+        if (this.parent === undefined) {
+            this.name = newName;
+            this.updateHash();
+            return;
+        }
+        delete this.parent.childrenObject[this.name];
+        this.name = newName;
+        this.parent.childrenObject[newName] = this;
+        this.updateHash();
+    }
+    removeDescendantsIf(checker) {
+        for (const child of [...this.children]) {
+            if (checker(child)) {
+                child.remove();
+            }
+        }
+        for (const child of this.children) {
+            child.removeDescendantsIf(checker);
+        }
+    }
     addAttribute(name, value) {
         var _a;
         var _b;

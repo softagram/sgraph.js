@@ -23,6 +23,24 @@ declare class SElement {
     createElementChain(id: string): SElement;
     traverseElements(visit: (e: SElement) => void): void;
     getAncestors(): SElement[];
+    getLevel(): number;
+    getRoot(): SElement;
+    isDescendantOf(ancestor: SElement): boolean;
+    getAncestorOfType(type: string): SElement | undefined;
+    getAncestorOfTypes(types: string[] | Set<string>): SElement | undefined;
+    getAncestorOfLevel(level: number): SElement | undefined;
+    getDescendants(): SElement[];
+    getNodeCount(): number;
+    getEACount(): number;
+    getEATypes(typeSet: Set<string>): void;
+    getEATypeCounts(counts: {
+        [key: string]: number;
+    }): void;
+    getMaxDepth(currentDepth: number): number;
+    hasType(): boolean;
+    remove(leaveParentUntouched?: boolean): void;
+    rename(newName: string): void;
+    removeDescendantsIf(checker: (e: SElement) => boolean): void;
     addAttribute(name: string, value: string): void;
     setAttributes(attributes: any): void;
     getAttributes(): {

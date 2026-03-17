@@ -57,10 +57,32 @@ class ModelApi {
       .map((ea) => ea.fromElement);
 
   getUsedElements = (element: SElement) =>
-    element.outgoing.map((ea) => ea.fromElement);
+    element.outgoing.map((ea) => ea.toElement);
 
   getUserElements = (element: SElement) =>
     element.incoming.map((ea) => ea.fromElement);
+
+  getElementByPath(path: string): SElement | undefined {
+    return this.egm.findElementFromPath(path);
+  }
+
+  filter(filterFunc: (element: SElement) => boolean): SElement[] {
+    const matched: SElement[] = [];
+    const recurse = (element: SElement) => {
+      if (filterFunc(element)) matched.push(element);
+      for (const child of element.children) {
+        recurse(child);
+      }
+    };
+    for (const child of this.egm.rootNode.children) {
+      recurse(child);
+    }
+    return matched;
+  }
+
+  getChildrenByType(element: SElement, elemType: string): SElement[] {
+    return element.children.filter((child) => child.typeEquals(elemType));
+  }
 
   createDescendants = (
     relatedElement: SElement,

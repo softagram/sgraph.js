@@ -17,7 +17,7 @@ class ModelApi {
         this.getCallingFunctions = (element) => element.incoming
             .filter((ea) => ea.deptype === 'function_ref')
             .map((ea) => ea.fromElement);
-        this.getUsedElements = (element) => element.outgoing.map((ea) => ea.fromElement);
+        this.getUsedElements = (element) => element.outgoing.map((ea) => ea.toElement);
         this.getUserElements = (element) => element.incoming.map((ea) => ea.fromElement);
         this.createDescendants = (relatedElement, newOrExistingReferredElement) => {
             const stack = [{ relatedElement, newOrExistingReferredElement }];
@@ -166,6 +166,26 @@ class ModelApi {
         };
         recursiveTraverse(this.model.rootNode);
         return matching;
+    }
+    getElementByPath(path) {
+        return this.egm.findElementFromPath(path);
+    }
+    filter(filterFunc) {
+        const matched = [];
+        const recurse = (element) => {
+            if (filterFunc(element))
+                matched.push(element);
+            for (const child of element.children) {
+                recurse(child);
+            }
+        };
+        for (const child of this.egm.rootNode.children) {
+            recurse(child);
+        }
+        return matched;
+    }
+    getChildrenByType(element, elemType) {
+        return element.children.filter((child) => child.typeEquals(elemType));
     }
     getCyclicDependencyCycles() {
         const cycles = [];
